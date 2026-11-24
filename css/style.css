@@ -128,6 +128,8 @@ h1 strong { font-size: 7.8cqw; color: #3d173f; margin-top: 2.6cqw; text-shadow: 
   color: #fff; background: #2d173de8; border-radius: 2cqw;
 }
 #debug output { display: block; margin-top: 1cqw; }
+#debug-cheeks { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75cqw; }
+#debug-cheeks input { width: 100%; }
 @media (pointer: coarse) and (orientation: portrait) {
   #game { width: 100%; height: 100dvh; }
 }

@@ -4,18 +4,18 @@ export const TITLE = '别扯了！我的电子手办成精了';
 export const FACES = ['idle', 'wink', 'surprised', 'annoyed', 'panic', 'smug', 'speechless', 'laugh'];
 
 export const PARTS = {
-  ahoge: { kind: 'ahoge', grid: [12, 24], root: [.84, .96], tip: [.12, .73], axis: [-.16, -1], stiffness: 120, damping: 4, maxMult: 3, reach: 119, padding: 12 },
-  ribbon_spring: { kind: 'ribbon_spring', grid: [8, 32], root: [.08, .06], tip: [.81, .97], stiffness: 50, damping: 3, maxMult: 2.2, reach: 148, padding: 10 },
-  charm_peach: { kind: 'charm_peach', grid: [8, 12], root: [.84, .06], tip: [.34, .88], stiffness: 80, damping: 3, maxMult: 1.6, reach: 105, padding: 12 },
-  sleeve_L: { kind: 'sleeve', grid: [16, 16], root: [.21, .10], tip: [.75, .89], stiffness: 160, damping: 8, maxMult: 1.5, reach: 150, padding: 8 },
-  sleeve_R: { kind: 'sleeve', grid: [16, 16], root: [.26, .88], tip: [.76, .18], stiffness: 160, damping: 8, maxMult: 1.5, reach: 145, padding: 8 },
-  legwear_L: { kind: 'legwear', grid: [12, 24], root: [.5, .01], tip: [.95, .6], stiffness: 260, damping: 10, maxMult: 1.25, reach: 107, side: 1, knee: 1700 },
-  legwear_R: { kind: 'legwear', grid: [12, 24], root: [.5, .01], tip: [.05, .6], stiffness: 260, damping: 10, maxMult: 1.25, reach: 104, side: -1, knee: 1689 },
-  face: { kind: 'face', grid: [24, 24], root: [.5, .5], tip: [.9, .5], stiffness: 300, damping: 12, maxMult: 1.2, reach: 78 },
+  ahoge: { kind: 'ahoge', grid: [12, 24], root: [.5, .98], tip: [.12, .38], axis: [-.16, -1], pinRadius: 12, stiffness: 120, damping: 4, maxMult: 3, reach: 119, padding: 12 },
+  ribbon_spring: { kind: 'ribbon_spring', grid: [8, 32], root: [.24, .01], tip: [.81, .97], pinEdge: 'top', pinWidth: 12, stiffness: 50, damping: 3, maxMult: 2.2, reach: 148, padding: 10 },
+  charm_peach: { kind: 'charm_peach', grid: [8, 12], root: [.37, .02], tip: [.34, .88], pinRadius: 12, stiffness: 80, damping: 3, maxMult: 1.6, reach: 105, padding: 12 },
+  sleeve_L: { kind: 'sleeve', grid: [16, 16], root: [.21, 0], tip: [.77, .94], pinEdge: 'top', pinWidth: 34, stiffness: 160, damping: 8, maxMult: 1.5, reach: 150 },
+  sleeve_R: { kind: 'sleeve', grid: [16, 16], root: [.99, .52], tip: [.62, .13], pinEdge: 'right', pinWidth: 26, stiffness: 160, damping: 8, maxMult: 1.5, reach: 145 },
+  legwear_L: { kind: 'legwear', grid: [12, 24], root: [.5, 0], tip: [.95, .6], stiffness: 260, damping: 10, maxMult: 1.25, reach: 107, side: 1, knee: 1868 },
+  legwear_R: { kind: 'legwear', grid: [12, 24], root: [.5, 0], tip: [.05, .6], stiffness: 260, damping: 10, maxMult: 1.25, reach: 104, side: -1, knee: 1868 },
+  face: { kind: 'face', grid: [36, 30], root: [.5, .5], tip: [.9, .5], stiffness: 300, damping: 12, maxMult: 1.2, reach: 78, rim: 30, radius: 40 },
 };
 export const CHEEKS = [
-  { x: 672, y: 379, rx: 20, ry: 14 },
-  { x: 794, y: 356, rx: 16, ry: 12 },
+  { x: 646, y: 440, radius: 40 },
+  { x: 845, y: 430, radius: 40 },
 ];
 
 export const CHALLENGES = [

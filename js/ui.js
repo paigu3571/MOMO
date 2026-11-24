@@ -1,4 +1,4 @@
-import { CHALLENGES, RATINGS, TITLE } from './config.js';
+import { CHALLENGES, FACES, RATINGS, TITLE } from './config.js';
 import { ratingFor } from './challenge.js';
 
 const el = (id) => document.getElementById(id);
@@ -114,7 +114,7 @@ export function makeUI(game) {
         return row;
       }));
     },
-    debug(activate, toggleSocks) {
+    debug(activate, toggleSocks, selectFace, cheeks, updateCheeks) {
       const panel = el('debug');
       const choose = el('debug-round');
       for (const spec of CHALLENGES) {
@@ -123,6 +123,31 @@ export function makeUI(game) {
       panel.hidden = false;
       el('debug-start').addEventListener('click', () => activate(choose.value));
       el('debug-hide-socks').addEventListener('change', (event) => toggleSocks(event.target.checked));
+      const face = el('debug-face');
+      for (const name of FACES) face.append(new Option(name, name));
+      face.addEventListener('change', () => selectFace(face.value));
+      const fields = el('debug-cheeks');
+      cheeks.forEach((cheek, index) => {
+        for (const [key, label] of [['x', 'X'], ['y', 'Y'], ['radius', '半径']]) {
+          const wrapper = document.createElement('label');
+          const input = document.createElement('input');
+          wrapper.textContent = (index ? '画面右 ' : '画面左 ') + label + ' ';
+          input.type = 'number';
+          input.min = key === 'radius' ? 15 : key === 'x' ? 631 : 316;
+          input.max = key === 'radius' ? 45 : key === 'x' ? 870 : 505;
+          input.value = cheek[key];
+          input.addEventListener('change', () => {
+            const value = input.valueAsNumber;
+            if (Number.isFinite(value)) {
+              cheek[key] = Math.max(Number(input.min), Math.min(Number(input.max), value));
+              updateCheeks();
+            }
+            input.value = cheek[key];
+          });
+          wrapper.append(input);
+          fields.append(wrapper);
+        }
+      });
     },
   };
 }

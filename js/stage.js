@@ -13,11 +13,11 @@ function loadImage(name) {
   return image.decode().then(() => image);
 }
 
-function makeTexture(image) {
+function makeTexture(image, face) {
   const texture = new THREE.Texture(image);
   texture.premultiplyAlpha = true;
-  texture.generateMipmaps = true;
-  texture.minFilter = THREE.LinearMipmapLinearFilter;
+  texture.generateMipmaps = !face;
+  texture.minFilter = face ? THREE.LinearFilter : THREE.LinearMipmapLinearFilter;
   texture.magFilter = THREE.LinearFilter;
   texture.needsUpdate = true;
   return texture;
@@ -94,7 +94,7 @@ export async function createStage(canvas) {
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: false, premultipliedAlpha: true, antialias: true, powerPreference: 'low-power' });
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
   renderer.setClearColor('#b674a8');
-  const textures = Object.fromEntries(names.map((name) => [name, makeTexture(images[name])]));
+  const textures = Object.fromEntries(names.map((name) => [name, makeTexture(images[name], name.startsWith('face_'))]));
   const background = plane([0, 0, WIDTH, HEIGHT], material(textures.bg_room), 0, scene);
   const character = new THREE.Group();
   scene.add(character);
@@ -148,6 +148,7 @@ export async function createStage(canvas) {
       face = next;
       selection.face.material.uniforms.image.value = textures['face_' + next];
     },
+    get expression() { return face; },
     point(clientX, clientY) {
       const box = canvas.getBoundingClientRect();
       const x = camera.left + (clientX - box.left) / box.width * viewW;
