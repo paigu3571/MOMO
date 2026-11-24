@@ -90,7 +90,9 @@ export class Round {
       case 'C2': return this.finish(this.bounces / 3 * 8.5);
       case 'C3': return this.finish(this.motion / 3 * 10);
       case 'C5': return this.finish(this.bestHold * 10);
-      default: return this.finish(this.scorePeak(), this.spec.id === 'C4' && this.peak < 1.04 ? '没捏动' : '');
+      case 'C1': return this.finish(this.scorePeak(), this.peak > 2.4 ? '拉断' : '');
+      case 'C4': return this.finish(this.scorePeak(), this.peak < 1.04 ? '没捏动' : '');
+      default: return this.finish(this.scorePeak());
     }
   }
 

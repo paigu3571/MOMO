@@ -26,6 +26,7 @@ async function run() {
   let lastFrame = performance.now();
   let lastLine = '';
   let clock = 0;
+  let debugFace = '';
 
   function quip(kind) {
     const available = QUIPS[kind].filter((line) => line !== lastLine);
@@ -138,11 +139,19 @@ async function run() {
     }, (hidden) => {
       stage.selection.legwear_L.mesh.visible = !hidden;
       stage.selection.legwear_R.mesh.visible = !hidden;
+    }, (face) => {
+      debugFace = face;
+      stage.face(face || (mode === 'cover' ? 'wink' : mode === 'results' ? grade.face : 'idle'));
+    }, stage.selection.face.cheekRegions, () => {
+      cancelInput();
+      active = null;
+      stage.selection.face.reset();
+      stage.selection.face.rebuildCheeks();
     });
     window.momoDebug = {
       point: (x, y) => stage.screenPoint(x, y),
       hit: (x, y) => stage.hit(x, y, false)?.name,
-      state: () => ({ mode, active: active?.name, spec: round?.spec.id, book: [...book], phaseEnd }),
+      state: () => ({ mode, active: active?.name, spec: round?.spec.id, book: [...book], phaseEnd, face: stage.expression }),
     };
   }
 
@@ -150,6 +159,7 @@ async function run() {
     const elapsed = Math.min(.13, (now - lastFrame) / 1000);
     lastFrame = now;
     clock += elapsed;
+    if (debugFace) stage.face(debugFace);
     stage.update(elapsed, clock);
     if (active) {
       const ratio = (active.mult - 1) / (active.config.maxMult - 1);

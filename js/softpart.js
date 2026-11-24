@@ -21,6 +21,7 @@ export class SoftPart {
     this.control = [0, 0];
     this.controlVelocity = [0, 0];
     this.goal = [0, 0];
+    this.cheekRegions = CHEEKS.map((cheek) => ({ ...cheek }));
     this.cheekWeights = CHEEKS.map(() => new Float32Array(count));
     this.mult = 1;
     this.speed = 0;
@@ -43,7 +44,7 @@ export class SoftPart {
       this.restY = (tipRow / rows - rootV) * height;
     }
     this.tipIndex = tipRow * (cols + 1) + tipCol;
-    this.restLength = Math.hypot(this.restX, this.restY);
+    this.restLength = config.radius ?? Math.max(1, Math.hypot(this.restX, this.restY));
     const uv = new Float32Array(count * 2);
     const indices = [];
     const norm = Math.hypot(xAxis, yAxis);
@@ -59,20 +60,19 @@ export class SoftPart {
         const along = ((u - rootU) * width * axisX + (v - rootV) * height * axisY);
         const alongTip = xAxis * axisX + yAxis * axisY;
         const length = Math.hypot((u - rootU) * width, (v - rootV) * height);
+        const pinDistance = config.pinEdge === 'right' ? width * (1 - u) :
+          config.pinEdge === 'top' ? height * v : length;
+        const pin = ease((pinDistance - (config.pinWidth ?? config.pinRadius ?? 0)) / 32);
         this.fixedWeights[i] = config.side ? this.sockWeight(localX, localY) :
-          ease(Math.max(along / Math.max(25, alongTip), length / norm * .7) / .83);
-        for (let c = 0; c < CHEEKS.length; c += 1) {
-          const cheek = CHEEKS[c];
-          const distance = Math.hypot((localX - cheek.x) / cheek.rx, (localY - cheek.y) / cheek.ry);
-          this.cheekWeights[c][i] = (1 - ease(distance)) ** 2;
-        }
+          pin * ease(Math.max(along / Math.max(25, alongTip), length / norm * .7) / .83);
         if (col < cols && row < rows) {
           const below = i + cols + 1;
           indices.push(i, below, i + 1, i + 1, below, below + 1);
         }
       }
     }
-    this.fixedWeights[this.tipIndex] = 1;
+    if (this.fixedWeights[this.tipIndex] > 0) this.fixedWeights[this.tipIndex] = 1;
+    if (config.kind === 'face') this.rebuildCheeks();
     this.weights.set(config.kind === 'face' ? this.cheekWeights[0] : this.fixedWeights);
     this.geometry = new BufferGeometry();
     this.geometry.setIndex(indices);
@@ -81,6 +81,28 @@ export class SoftPart {
     this.mesh = new Mesh(this.geometry, material);
     this.mesh.frustumCulled = false;
     this.updateGeometry();
+  }
+
+  rimWeight(x, y) {
+    const [left, top, width, height] = this.rect;
+    const edge = Math.min(x - left, y - top, left + width - x, top + height - y);
+    return ease((edge - this.config.rim) / 17);
+  }
+
+  rebuildCheeks() {
+    const [left, top, width, height] = this.rect;
+    const [cols, rows] = this.config.grid;
+    for (let row = 0; row <= rows; row += 1) {
+      for (let col = 0; col <= cols; col += 1) {
+        const i = row * (cols + 1) + col;
+        const x = left + width * col / cols;
+        const y = top + height * row / rows;
+        for (const [index, cheek] of this.cheekRegions.entries()) {
+          const distance = Math.hypot(x - cheek.x, y - cheek.y) / cheek.radius;
+          this.cheekWeights[index][i] = this.rimWeight(x, y) * (1 - ease(distance));
+        }
+      }
+    }
   }
 
   makeSideProfile() {
@@ -113,7 +135,8 @@ export class SoftPart {
   hit(x, y, touch) {
     const [left, top, width, height] = this.rect;
     if (this.config.kind === 'face') {
-      return CHEEKS.some((c) => Math.hypot((x - c.x) / c.rx, (y - c.y) / c.ry) <= (touch ? 1.14 : 1));
+      return this.rimWeight(x, y) > 0 && this.cheekRegions.some((c) =>
+        Math.hypot(x - c.x, y - c.y) <= c.radius);
     }
     if (this.config.side && this.sockWeight(x, y) <= .06) return false;
     const check = (u, v) => {
@@ -138,7 +161,8 @@ export class SoftPart {
     this.origin = [x, y];
     this.goal.fill(0);
     if (this.config.kind === 'face') {
-      const nearest = Math.abs(x - CHEEKS[0].x) < Math.abs(x - CHEEKS[1].x) ? 0 : 1;
+      const [left, right] = this.cheekRegions;
+      const nearest = Math.hypot(x - left.x, y - left.y) < Math.hypot(x - right.x, y - right.y) ? 0 : 1;
       this.weights.set(this.cheekWeights[nearest]);
     }
   }
@@ -240,7 +264,9 @@ export class SoftPart {
         this.offset[i] = this.config.side * clamp(this.offset[i] * this.config.side, 0, sockLimit * this.weights[i / 2]);
       }
     }
-    if (this.config.kind !== 'face') this.offset.set(this.control, this.tipIndex * 2);
+    if (this.config.kind !== 'face' && this.fixedWeights[this.tipIndex] === 1) {
+      this.offset.set(this.control, this.tipIndex * 2);
+    }
     this.material.uniforms.tension.value = (this.mult - 1) / (this.config.maxMult - 1);
     this.updateGeometry();
   }
