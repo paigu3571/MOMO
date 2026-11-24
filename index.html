@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#26162e">
+  <title>别扯了！我的电子手办成精了</title>
+  <link rel="icon" href="./assets/icon_peach.webp" type="image/webp">
+  <link rel="stylesheet" href="./css/style.css">
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
+  <script type="module" src="./js/main.js"></script>
+</head>
+<body>
+  <main id="game" aria-label="MOMO 手办物理挑战" data-mode="cover">
+    <canvas id="stage" aria-label="MOMO 全身互动场景"></canvas>
+
+    <section id="cover" class="screen">
+      <div class="cover-title">
+        <img class="peach" src="./assets/icon_peach.webp" alt="" width="44" height="44">
+        <h1><span>别扯了！</span><strong>我的电子手办成精了</strong></h1>
+        <p>手办物理挑战 · 从夯到拉</p>
+      </div>
+      <div class="cover-actions">
+        <button id="start" class="primary" disabled>加载素材…</button>
+        <p id="cover-status" class="cover-hint" role="status">拖动角色部件，松手看回弹</p>
+      </div>
+    </section>
+
+    <section id="hud" class="screen" aria-label="挑战界面" hidden>
+      <header class="hud-top">
+        <div id="rating" class="rating" aria-label="评级">
+          <img src="./assets/icon_peach.webp" alt="" width="32" height="32">
+          <strong id="score">—</strong>
+          <ol id="tiers"><li>夯</li><li>顶级</li><li>人上人</li><li>NPC</li><li>拉完了</li></ol>
+        </div>
+        <div id="challenge" class="challenge">
+          <div class="challenge-meta"><span id="round"></span><span id="time"></span></div>
+          <h2 id="prompt"></h2>
+          <p id="hint"></p>
+          <div class="time-track" aria-hidden="true"><span id="time-fill"></span></div>
+        </div>
+      </header>
+      <div id="bubble" class="bubble" role="status" hidden></div>
+      <div id="meter" class="meter" aria-label="实时拉伸倍率" hidden>
+        <b id="multiplier">×1.00</b>
+        <div class="ruler"><span id="meter-fill"></span></div>
+        <span id="max-mult"></span>
+      </div>
+      <div id="feedback" class="feedback" role="status" hidden>
+        <output id="round-score"></output><p id="round-comment"></p>
+      </div>
+      <div class="hud-actions">
+        <button id="restart" class="quiet">重来</button>
+        <button id="mute" class="quiet" aria-pressed="false">静音</button>
+      </div>
+    </section>
+
+    <section id="results" class="screen" aria-label="结算" hidden>
+      <header class="result-head">
+        <p>挑战结算</p>
+        <h2><strong id="final-tier"></strong> <span id="final-score"></span></h2>
+        <p id="final-comment"></p>
+        <ol id="result-tiers" class="result-tiers" aria-label="最终评级">
+          <li>夯</li><li>顶级</li><li>人上人</li><li>NPC</li><li>拉完了</li>
+        </ol>
+      </header>
+      <div class="result-bottom">
+        <ol id="round-results"></ol>
+        <div class="result-actions">
+          <button id="save-card" class="primary">保存结果卡</button>
+          <button id="retry" class="quiet">再来一次</button>
+          <button id="free" class="quiet">自由玩</button>
+        </div>
+      </div>
+    </section>
+
+    <span class="demo-mark">开发中 Demo</span>
+    <aside id="debug" aria-label="调试面板" hidden>
+      <select id="debug-round" aria-label="调试挑战"></select>
+      <button id="debug-start">进入</button>
+      <label><input id="debug-hide-socks" type="checkbox">隐藏长袜层</label>
+      <output id="debug-state"></output>
+    </aside>
+  </main>
+</body>
+</html>
